@@ -2,14 +2,22 @@
 import { defineConfig } from 'astro/config';
 
 /**
- * Náhled běží na github.io v podsložce /moser2506v2/, ostrý web v kořeni
- * vlastní domény. Přepíná to proměnná DEPLOY_TARGET nastavená v GitHub Actions,
- * takže se konfigurace při přepnutí domény nemusí ručně měnit.
+ * Kam se web staví, řídí proměnná DEPLOY_TARGET:
+ *
+ *   nenastaveno  - lokální vývoj, web běží v kořeni (http://localhost:4321/)
+ *   preview      - náhled na shrewdczech-alt.github.io/moser2506v2/
+ *   production   - ostrá doména moser2506.cz
+ *
+ * Při přepnutí na ostrou doménu se mění jen tahle hodnota ve workflow
+ * a přidá se public/CNAME.
  */
-const isPreview = process.env.DEPLOY_TARGET !== 'production';
+const target = process.env.DEPLOY_TARGET ?? 'dev';
+const isPreview = target === 'preview';
+const isProduction = target === 'production';
 
 export default defineConfig({
-  site: isPreview ? 'https://shrewdczech-alt.github.io' : 'https://moser2506.cz',
+  site: isProduction ? 'https://moser2506.cz' : 'https://shrewdczech-alt.github.io',
+  // Podsložka jen u náhledu; lokálně i na ostré doméně běží web v kořeni.
   base: isPreview ? '/moser2506v2' : '/',
   trailingSlash: 'always',
 
