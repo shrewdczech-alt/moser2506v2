@@ -1,0 +1,77 @@
+---
+import { getAbsoluteLocaleUrl } from 'astro:i18n';
+import type { Locale } from '../config/site';
+import { locales } from '../config/site';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  /** Náhledový obrázek pro sdílení na sociálních sítích. */
+  ogImage?: string;
+}
+
+const { locale, title, description, ogImage } = Astro.props;
+
+// Jazyková metadata se odvozují z jazyka stránky, nepíšou se ručně.
+// Právě tohle se na současném webu rozešlo - anglická stránka má lang="cs".
+const htmlLang = locale === 'cs' ? 'cs' : 'en';
+const ogLocale = locale === 'cs' ? 'cs_CZ' : 'en_GB';
+
+const canonical = getAbsoluteLocaleUrl(locale, '/');
+const alternates = locales.map((code) => ({
+  code,
+  href: getAbsoluteLocaleUrl(code, '/'),
+}));
+
+const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined;
+---
+
+<!doctype html>
+<html lang={htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    {/* Říká vyhledávačům, že /  a  /en/ jsou jazykové varianty téže stránky. */}
+    {alternates.map(({ code, href }) => (
+      <link rel="alternate" hreflang={code} href={href} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={alternates[0]!.href} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Moser 2506" />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href={`${import.meta.env.BASE_URL}favicon.svg`} type="image/svg+xml" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Quicksand:wght@500;700&display=swap"
+    />
+
+    <slot name="head" />
+  </head>
+
+  <body>
+    <Header locale={locale} />
+    <main id="content">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+  </body>
+</html>

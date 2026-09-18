@@ -1,0 +1,20 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { useTranslations } from '../i18n/ui';
+
+// GitHub Pages zobrazí tuhle stránku u každé neexistující adresy.
+// Současný web vlastní chybovou stránku nemá - návštěvník vidí šedou stránku GitHubu.
+const t = useTranslations('cs');
+const base = import.meta.env.BASE_URL;
+---
+
+<Layout locale="cs" title="404 — Moser 2506" description={t('error.404.text')}>
+  <section class="section">
+    <div class="container">
+      <h1>{t('error.404.title')}</h1>
+      <p>{t('error.404.text')}</p>
+      <p lang="en">Page not found. Try going back to the homepage.</p>
+      <a class="button" href={base}>{t('error.404.back')}</a>
+    </div>
+  </section>
+</Layout>

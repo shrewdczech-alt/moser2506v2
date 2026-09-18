@@ -1,0 +1,56 @@
+name: Nasazení na GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # Umožní spustit nasazení ručně z karty Actions.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Běží vždy jen jedno nasazení; rozpracované se nechá doběhnout.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Typová kontrola - chybějící překlad nebo špatný obsah shodí build tady,
+      # ne až na produkci.
+      - run: npm run check
+
+      # DEPLOY_TARGET řídí, zda se web staví pro náhled na github.io
+      # nebo pro ostrou doménu. Při přepnutí ve fázi 7 se změní jen tahle hodnota.
+      - run: npm run build
+        env:
+          DEPLOY_TARGET: preview
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # Nasazení přes artefakt, ne z větve - tím se úplně obchází Jekyll,
+      # který by ignoroval složku s vygenerovaným CSS.
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,226 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import type { Locale } from '../config/site';
+import { useTranslations } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+// Kotvy odpovídají id sekcí na současném webu, aby nepřestaly fungovat
+// odkazy, které už někdo někde má.
+const navItems = [
+  { href: '#about', label: t('nav.about') },
+  { href: '#amenities', label: t('nav.amenities') },
+  { href: '#gallery', label: t('nav.gallery') },
+  { href: '#trips', label: t('nav.trips') },
+  { href: '#FAQ', label: t('nav.faq') },
+  { href: '#bookings', label: t('nav.bookings') },
+  { href: '#contacts', label: t('nav.contacts') },
+];
+
+const otherLocale: Locale = locale === 'cs' ? 'en' : 'cs';
+const otherLocaleUrl = getRelativeLocaleUrl(otherLocale, '/');
+const homeUrl = getRelativeLocaleUrl(locale, '/');
+---
+
+<a class="skip-link" href="#content">{t('nav.skipToContent')}</a>
+
+<header class="header">
+  <div class="header__inner container">
+    <a class="header__logo" href={homeUrl}>Moser&nbsp;2506</a>
+
+    <nav class="header__nav" id="main-nav" aria-label={t('nav.about')}>
+      <ul class="header__list">
+        {navItems.map((item) => (
+          <li><a class="header__link" href={item.href}>{item.label}</a></li>
+        ))}
+      </ul>
+      <a class="header__lang" href={otherLocaleUrl} hreflang={otherLocale} lang={otherLocale}>
+        {t('nav.switchLanguage')}
+      </a>
+    </nav>
+
+    <button
+      class="header__toggle"
+      type="button"
+      aria-controls="main-nav"
+      aria-expanded="false"
+      data-menu-toggle
+      data-close-label={t('nav.closeMenu')}
+    >
+      <span class="visually-hidden" data-menu-label>{t('nav.openMenu')}</span>
+      <span class="header__bars" aria-hidden="true"></span>
+    </button>
+  </div>
+</header>
+
+<script>
+  // Mobilní menu. Jediný skript v hlavičce - bez knihovny, ~20 řádků.
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const nav = document.getElementById('main-nav');
+  const label = document.querySelector<HTMLElement>('[data-menu-label]');
+
+  if (toggle && nav && label) {
+    const openText = label.textContent ?? '';
+    const closeText = toggle.dataset.closeLabel ?? openText;
+
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      document.body.classList.toggle('is-menu-open', open);
+      label.textContent = open ? closeText : openText;
+    };
+
+    toggle.addEventListener('click', () => {
+      setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+
+    // Po kliknutí na položku se menu zavře, jinak by zakrylo cílovou sekci.
+    nav.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('a')) setOpen(false);
+    });
+
+    // Escape zavře menu - očekávané chování při ovládání klávesnicí.
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    });
+  }
+</script>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--color-white);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-height: var(--header-height);
+  }
+
+  .header__logo {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: var(--text-lg);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .header__nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+  }
+
+  .header__list {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .header__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .header__link:hover {
+    color: var(--color-dark-soft);
+    text-decoration: underline;
+  }
+
+  .header__lang {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    text-decoration: none;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  .header__toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .header__bars,
+  .header__bars::before,
+  .header__bars::after {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--color-dark);
+    transition: transform 150ms ease, opacity 150ms ease;
+  }
+
+  .header__bars::before,
+  .header__bars::after {
+    content: '';
+    position: relative;
+  }
+
+  .header__bars::before { top: -8px; }
+  .header__bars::after { top: 6px; }
+
+  /* Pod 960px se navigace schová do vysouvacího panelu. */
+  @media (max-width: 60rem) {
+    .header__toggle {
+      display: inline-flex;
+    }
+
+    .header__nav {
+      position: fixed;
+      inset: var(--header-height) 0 auto 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-2);
+      padding: var(--space-4);
+      background: var(--color-white);
+      border-top: 1px solid var(--color-border);
+      box-shadow: var(--shadow-md);
+      display: none;
+    }
+
+    :global(body.is-menu-open) .header__nav {
+      display: flex;
+    }
+
+    .header__list {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+    }
+
+    .header__link {
+      padding-block: var(--space-2);
+    }
+
+    .header__lang {
+      align-self: flex-start;
+      margin-top: var(--space-2);
+    }
+  }
+</style>

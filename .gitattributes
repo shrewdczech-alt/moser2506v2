@@ -1,0 +1,12 @@
+# Sjednocené konce řádků. Bez tohohle by se soubory editované na Windows
+# a přes web GitHubu navzájem přepisovaly celé, i když se změnil jeden řádek.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.pdf binary
+*.woff2 binary

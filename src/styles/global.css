@@ -1,0 +1,199 @@
+/*
+ * Designové tokeny a základní styly.
+ *
+ * Barvy a fonty odpovídají současnému webu (Astra + Quicksand / Open Sans),
+ * takže návštěvník po migraci nepozná rozdíl. Všechno je definované tady
+ * jako proměnná - změna odstínu je změna jednoho řádku, ne hledání po šablonách.
+ */
+
+:root {
+  /* Barvy převzaté ze současného webu */
+  --color-accent: #ffba00;
+  --color-accent-light: #ffd014;
+  --color-dark: #11202a;
+  --color-dark-soft: #1d394b;
+  --color-surface: #f6f6f9;
+  --color-surface-alt: #f4f4f4;
+  --color-white: #ffffff;
+
+  --color-text: var(--color-dark);
+  --color-text-inverse: var(--color-white);
+  --color-text-muted: #5a6b76;
+  --color-border: #d9dee2;
+
+  /* Typografie */
+  --font-heading: 'Quicksand', system-ui, sans-serif;
+  --font-body: 'Open Sans', system-ui, sans-serif;
+
+  --text-sm: 0.9375rem;
+  --text-base: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  --text-2xl: clamp(2rem, 1.5rem + 2.2vw, 3rem);
+
+  /* Rozestupy - jedna stupnice pro celý web */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+
+  --radius: 4px;
+  --radius-lg: 10px;
+
+  --content-width: 68rem;
+  --header-height: 4.5rem;
+
+  --shadow-sm: 0 1px 3px rgb(17 32 42 / 0.1);
+  --shadow-md: 0 6px 20px rgb(17 32 42 / 0.12);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Odsazení při skoku na kotvu, aby nadpis nezmizel pod lepivou hlavičkou. */
+  scroll-padding-top: var(--header-height);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.65;
+  color: var(--color-text);
+  background: var(--color-white);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.2;
+  text-wrap: balance;
+  margin: 0 0 var(--space-4);
+}
+
+h1 { font-size: var(--text-2xl); }
+h2 { font-size: var(--text-xl); }
+h3 { font-size: var(--text-lg); }
+
+p {
+  margin: 0 0 var(--space-4);
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Viditelné ohraničení při ovládání klávesnicí - nikdy neodstraňovat. */
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+/* Respektuje nastavení "omezit pohyb" v systému návštěvníka. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* --- Pomocné třídy --------------------------------------------------- */
+
+.container {
+  width: 100%;
+  max-width: var(--content-width);
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+}
+
+.section {
+  padding-block: var(--space-16);
+  scroll-margin-top: var(--header-height);
+}
+
+.section--alt {
+  background: var(--color-surface);
+}
+
+/* Skryté pro oči, čitelné pro odečítač obrazovky. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Odkaz "Přejít k obsahu" - zobrazí se až při tabování. */
+.skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: calc(-1 * var(--space-16));
+  z-index: 100;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-dark);
+  color: var(--color-text-inverse);
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: top 150ms ease;
+}
+
+.skip-link:focus {
+  top: var(--space-4);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  /* Minimálně 44px na výšku kvůli pohodlnému trefení prstem na mobilu. */
+  min-height: 44px;
+  padding: var(--space-3) var(--space-6);
+  font-family: var(--font-heading);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-dark);
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.button:hover {
+  background: var(--color-accent-light);
+}
