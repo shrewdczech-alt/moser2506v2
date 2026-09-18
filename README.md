@@ -17,8 +17,9 @@ kde byl nacommitovaný statický export WordPressu.
 | Provozní řád nebo GDPR | `public/dokumenty/` — přepsat soubor stejným názvem |
 | Barvy, velikosti písma, rozestupy | `src/styles/global.css`, sekce `:root` |
 
-Po uložení změny a pushnutí do `main` se web nasadí sám. Podrobný návod pro
-neprogramátora bude v `EDITACE.md`.
+Po uložení změny a pushnutí do `main` se web nasadí sám. Podrobný návod
+krok za krokem je v [EDITACE.md](EDITACE.md) — počítá s tím, že se edituje
+přes web GitHubu, bez instalace čehokoli.
 
 ## Vývoj
 
@@ -63,9 +64,12 @@ doménu z původního repozitáře.
 
 ## Stav migrace
 
-- [ ] 1 — Oprava rozbitých odkazů v původním repu
-- [x] 2 — Kostra, i18n routing, nasazovací workflow
-- [ ] 3 — Převod obsahu z původního webu
-- [ ] 4 — Sekce webu
-- [ ] 5 — Výlety, Aktuality, Previo, Formspree
-- [ ] 6 — SEO kontrola, `EDITACE.md`, přepnutí domény
+- [x] 1 — Kostra, i18n routing, nasazovací workflow
+- [x] 2 — Převod obsahu, fotek a dokumentů z původního webu
+- [x] 3 — Všechny sekce webu
+- [x] 4 — Výlety, Aktuality, Previo, Formspree
+- [x] 5 — `EDITACE.md`
+- [ ] 6 — **Přepnutí ostré domény** (čeká na odsouhlasení)
+
+Původní web na `moser2506.cz` běží beze změny, dokud se doména vědomě
+nepřepne. Tenhle repozitář zatím nasazuje jen náhled.

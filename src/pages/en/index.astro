@@ -1,19 +1,29 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-
-// Anglická verze. Jazyk se předává layoutu, který z něj odvodí
-// lang, hreflang i og:locale - nepíšou se ručně.
+import Hero from '../../components/Hero.astro';
+import Accommodation from '../../components/Accommodation.astro';
+import Amenities from '../../components/Amenities.astro';
+import Gallery from '../../components/Gallery.astro';
+import Trips from '../../components/Trips.astro';
+import News from '../../components/News.astro';
+import Faq from '../../components/Faq.astro';
+import Booking from '../../components/Booking.astro';
+import Contact from '../../components/Contact.astro';
 ---
 
 <Layout
   locale="en"
-  title="Moser 2506 Apartment — Karlovy Vary"
-  description="Modern one-bedroom apartment (48 m²) in a gated residential complex in Karlovy Vary. Wellness, parking, quiet location."
+  title="Moser 2506 Apartment — accommodation in Karlovy Vary"
+  description="Modern one-bedroom apartment (48 m²) in the gated Moser Residence in Karlovy Vary. Pool, sauna, gym, private parking space and balcony."
+  ogImage="/fotky/hero/panorama.jpg"
 >
-  <section class="section" id="about">
-    <div class="container">
-      <h1>Moser 2506 Apartment</h1>
-      <p>Site skeleton. Section content will be added in phase 4.</p>
-    </div>
-  </section>
+  <Hero locale="en" />
+  <Accommodation locale="en" />
+  <Amenities locale="en" />
+  <Gallery locale="en" />
+  <Trips locale="en" />
+  <News locale="en" />
+  <Faq locale="en" />
+  <Booking locale="en" />
+  <Contact locale="en" />
 </Layout>

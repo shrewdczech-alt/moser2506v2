@@ -1,0 +1,112 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { Locale } from '../config/site';
+import { useTranslations } from '../i18n/ui';
+import Photo from './Photo.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const entries = (await getCollection('trips', ({ id }) => id.startsWith(`${locale}/`)))
+  .sort((a, b) => a.data.order - b.data.order);
+
+const trips = await Promise.all(
+  entries.map(async (entry) => ({ data: entry.data, Content: (await render(entry)).Content })),
+);
+---
+
+{trips.length > 0 && (
+  <section class="section" id="trips">
+    <div class="container">
+      <h2>{t('trips.heading')}</h2>
+
+      <ul class="trips">
+        {trips.map(({ data, Content }) => (
+          <li class="trip">
+            {data.photo && (
+              <Photo
+                file={data.photo.file}
+                alt={data.photo.alt}
+                widths={[400, 800]}
+                sizes="(max-width: 40rem) 100vw, 20rem"
+                class="trip__photo"
+              />
+            )}
+            <div class="trip__body">
+              <h3 class="trip__title">{data.title}</h3>
+              <p class="trip__distance">{data.distance}</p>
+              <div class="trip__text"><Content /></div>
+              {data.link && (
+                <a class="trip__link" href={data.link} rel="noopener noreferrer" target="_blank">
+                  {t('trips.readMore')}
+                </a>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
+
+<style>
+  .trips {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--space-6);
+    margin: var(--space-8) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .trip {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .trip :global(.trip__photo) {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+
+  .trip__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-6);
+  }
+
+  .trip__title {
+    margin: 0;
+  }
+
+  .trip__distance {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    color: var(--color-dark-soft);
+  }
+
+  .trip__text :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .trip__link {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+  }
+</style>

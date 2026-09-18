@@ -1,0 +1,74 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { Locale } from '../config/site';
+import { useTranslations } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+/**
+ * Sekce Aktuality se zobrazí jen tehdy, když nějaká novinka existuje
+ * a není starší než rok. Prázdná nebo rok neaktualizovaná sekce novinek
+ * působí na návštěvníka hůř, než kdyby tam nebyla.
+ */
+const MAX_AGE_MS = 365 * 24 * 60 * 60 * 1000;
+const now = Date.now();
+
+const entries = (await getCollection('news', ({ id }) => id.startsWith(`${locale}/`)))
+  .filter((entry) => now - entry.data.date.getTime() < MAX_AGE_MS)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const news = await Promise.all(
+  entries.map(async (entry) => ({ data: entry.data, Content: (await render(entry)).Content })),
+);
+
+const dateFormat = new Intl.DateTimeFormat(locale === 'cs' ? 'cs-CZ' : 'en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+---
+
+{news.length > 0 && (
+  <section class="section section--alt" id="news">
+    <div class="container">
+      <h2>{t('news.heading')}</h2>
+
+      <ul class="news">
+        {news.map(({ data, Content }) => (
+          <li class="news__item">
+            <time class="news__date" datetime={data.date.toISOString().slice(0, 10)}>
+              {dateFormat.format(data.date)}
+            </time>
+            <h3 class="news__title">{data.title}</h3>
+            <div><Content /></div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
+
+<style>
+  .news {
+    display: grid;
+    gap: var(--space-8);
+    margin: var(--space-8) 0 0;
+    padding: 0;
+    list-style: none;
+    max-width: 44rem;
+  }
+
+  .news__date {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .news__title {
+    margin: var(--space-1) 0 var(--space-2);
+  }
+</style>

@@ -1,0 +1,95 @@
+---
+import { getEntry } from 'astro:content';
+import type { Locale } from '../config/site';
+import { site } from '../config/site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const entry = await getEntry('contact', `${locale}/contact`);
+if (!entry) throw new Error(`Chybí obsahový soubor src/content/${locale}/contact.md`);
+const {
+  heading, subheading, contactLabel, providerLabel, addressLabel, mapLabel, provider, address,
+} = entry.data;
+---
+
+<section class="section" id="contacts">
+  <div class="container">
+    <h2>{heading}</h2>
+    <p class="section__lead">{subheading}</p>
+
+    <div class="contact">
+      <div>
+        <h3 class="contact__label">{contactLabel}</h3>
+        <ul class="contact__list">
+          <li><a href={`tel:${site.phoneHref}`}>{site.phone}</a></li>
+          <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="contact__label">{addressLabel}</h3>
+        <address class="contact__address">
+          {address.map((line) => <span>{line}</span>)}
+        </address>
+        <a class="button contact__map" href={site.mapUrl} rel="noopener noreferrer" target="_blank">
+          {mapLabel}
+        </a>
+      </div>
+
+      <div>
+        <h3 class="contact__label">{providerLabel}</h3>
+        <address class="contact__address">
+          {provider.map((line) => <span>{line}</span>)}
+        </address>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .section__lead {
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-8);
+  }
+
+  .contact {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--space-8);
+  }
+
+  .contact__label {
+    font-size: var(--text-base);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+  }
+
+  .contact__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .contact__list a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: var(--text-lg);
+  }
+
+  .contact__address {
+    display: grid;
+    font-style: normal;
+  }
+
+  .contact__map {
+    margin-top: var(--space-4);
+  }
+</style>

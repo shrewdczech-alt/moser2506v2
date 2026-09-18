@@ -1,0 +1,20 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getEntry } from 'astro:content';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { useTranslations } from '../../i18n/ui';
+
+const t = useTranslations('en');
+const booking = await getEntry('booking', 'en/booking');
+const { thanksHeading, thanksText } = booking!.data;
+---
+
+<Layout locale="en" title={`${thanksHeading} — Moser 2506`} description={thanksText}>
+  <section class="section">
+    <div class="container">
+      <h1>{thanksHeading}</h1>
+      <p>{thanksText}</p>
+      <a class="button" href={getRelativeLocaleUrl('en', '/')}>{t('error.404.back')}</a>
+    </div>
+  </section>
+</Layout>

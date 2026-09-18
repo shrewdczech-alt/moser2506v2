@@ -1,0 +1,89 @@
+---
+import { getEntry } from 'astro:content';
+import type { Locale } from '../config/site';
+import { useTranslations } from '../i18n/ui';
+import Photo from './Photo.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const entry = await getEntry('hero', `${locale}/hero`);
+if (!entry) throw new Error(`Chybí obsahový soubor src/content/${locale}/hero.md`);
+const { title, subtitle, photo } = entry.data;
+---
+
+<section class="hero">
+  <div class="hero__media">
+    <Photo
+      file={photo.file}
+      alt={photo.alt}
+      widths={[768, 1280, 1920]}
+      sizes="100vw"
+      loading="eager"
+      class="hero__image"
+    />
+  </div>
+
+  <div class="container hero__content">
+    <h1 class="hero__title">
+      {title}<span class="hero__subtitle">{subtitle}</span>
+    </h1>
+    <a class="button hero__cta" href="#bookings">{t('hero.cta')}</a>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: grid;
+    /* Fotka se roztáhne přes celou plochu, text sedí u spodního okraje. */
+    align-items: stretch;
+    min-height: min(70vh, 34rem);
+    isolation: isolate;
+  }
+
+  .hero__media,
+  .hero__content {
+    grid-area: 1 / 1;
+  }
+
+  .hero__media {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero__media :global(.hero__image) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Ztmavení odspodu, aby byl nadpis čitelný na jakékoli fotce. */
+  .hero__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(17 32 42 / 0.75) 0%, rgb(17 32 42 / 0.15) 55%, transparent 100%);
+  }
+
+  .hero__content {
+    position: relative;
+    z-index: 1;
+    align-self: end;
+    padding-block: var(--space-12);
+    color: var(--color-text-inverse);
+  }
+
+  .hero__title {
+    margin-bottom: var(--space-6);
+    text-shadow: 0 2px 12px rgb(17 32 42 / 0.5);
+  }
+
+  .hero__subtitle {
+    display: block;
+    font-weight: 500;
+  }
+</style>

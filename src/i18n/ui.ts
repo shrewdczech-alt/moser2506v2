@@ -26,6 +26,14 @@ const cs = {
 
   'hero.cta': 'Zjistit dostupnost',
 
+  'gallery.previous': 'Předchozí fotka',
+  'gallery.next': 'Další fotka',
+  'gallery.close': 'Zavřít galerii',
+
+  'trips.heading': 'Tipy na výlet',
+  'trips.readMore': 'Více informací',
+  'news.heading': 'Aktuality',
+
   'form.name': 'Jméno',
   'form.email': 'E-mail',
   'form.message': 'Vaše zpráva (termín, počet osob…)',
@@ -60,6 +68,14 @@ const en: Record<UiKey, string> = {
   'nav.switchLanguage': 'Čeština',
 
   'hero.cta': 'Check availability',
+
+  'gallery.previous': 'Previous photo',
+  'gallery.next': 'Next photo',
+  'gallery.close': 'Close gallery',
+
+  'trips.heading': 'Day trips',
+  'trips.readMore': 'More information',
+  'news.heading': 'News',
 
   'form.name': 'Name',
   'form.email': 'E-mail',

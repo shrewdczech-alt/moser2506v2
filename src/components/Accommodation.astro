@@ -1,0 +1,95 @@
+---
+import { getEntry, render } from 'astro:content';
+import type { Locale } from '../config/site';
+import Photo from './Photo.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const entry = await getEntry('accommodation', `${locale}/accommodation`);
+if (!entry) throw new Error(`Chybí obsahový soubor src/content/${locale}/accommodation.md`);
+const { Content } = await render(entry);
+const { heading, subheading, tagline, photos } = entry.data;
+---
+
+<section class="section" id="about">
+  <div class="container">
+    <h2>{heading}</h2>
+    <p class="section__lead">{subheading} — {tagline}</p>
+
+    <div class="accommodation">
+      <div class="accommodation__text">
+        <Content />
+      </div>
+
+      <div class="accommodation__photos">
+        {photos.map((photo) => (
+          <Photo
+            file={photo.file}
+            alt={photo.alt}
+            sizes="(max-width: 56rem) 100vw, 26rem"
+            class="accommodation__photo"
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .section__lead {
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-8);
+  }
+
+  .accommodation {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  /* Nad 56rem má text a fotky vedle sebe; fotky se drží u horního okraje. */
+  @media (min-width: 56rem) {
+    .accommodation {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: var(--space-12);
+      align-items: start;
+    }
+  }
+
+  .accommodation__text :global(h3) {
+    margin-top: var(--space-8);
+  }
+
+  .accommodation__text :global(h3:first-child) {
+    margin-top: 0;
+  }
+
+  .accommodation__text :global(ul) {
+    padding-left: var(--space-5);
+  }
+
+  .accommodation__text :global(li) {
+    margin-bottom: var(--space-3);
+  }
+
+  .accommodation__photos {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 30rem) and (max-width: 55.99rem) {
+    .accommodation__photos {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .accommodation__photos :global(.accommodation__photo) {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+  }
+</style>

@@ -1,0 +1,39 @@
+---
+import { Image } from 'astro:assets';
+import { getPhoto } from '../lib/photos';
+
+interface Props {
+  /** Cesta relativní k src/fotky/, např. "sekce/loznice.jpg". */
+  file: string;
+  alt: string;
+  widths?: number[];
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+  class?: string;
+}
+
+const {
+  file,
+  alt,
+  widths = [480, 768, 1200],
+  sizes = '(max-width: 48rem) 100vw, 50vw',
+  loading = 'lazy',
+  class: className,
+} = Astro.props;
+
+const image = getPhoto(file);
+// Nenabízet variantu širší, než je samotný zdroj - jen by se zbytečně
+// generovala a nic by nepřidala.
+const usable = widths.filter((w) => w <= image.width);
+---
+
+<Image
+  src={image}
+  alt={alt}
+  widths={usable.length ? usable : [image.width]}
+  sizes={sizes}
+  loading={loading}
+  decoding="async"
+  format="webp"
+  class={className}
+/>

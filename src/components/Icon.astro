@@ -1,0 +1,79 @@
+---
+/**
+ * Ikony pro karty vybavení.
+ *
+ * Dřív byly ikona, nadpis i popis zapečené do jednoho PNG, takže text
+ * nebyl čitelný pro vyhledávače ani odečítače obrazovky a pro angličtinu
+ * musela vzniknout druhá sada obrázků. Teď je obrázkem jen ikona.
+ */
+interface Props {
+  name: 'bed' | 'kitchen' | 'pool' | 'parking' | 'balcony' | 'wifi';
+}
+
+const { name } = Astro.props;
+---
+
+<svg
+  class="icon"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+>
+  {name === 'bed' && (
+    <>
+      <path d="M2 18v-6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v6" />
+      <path d="M2 18v2M22 18v2M2 14h20" />
+      <path d="M6 10V8a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2M13 10V8a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2" />
+    </>
+  )}
+  {name === 'kitchen' && (
+    <>
+      <rect x="3" y="9" width="18" height="12" rx="1.5" />
+      <path d="M12 9v12M3 13h9" />
+      <circle cx="7.5" cy="16.5" r="1" />
+      <path d="M6 6h5M7 3v3M16 6h4M18 3v3" />
+    </>
+  )}
+  {name === 'pool' && (
+    <>
+      <path d="M2 17c1.5 0 1.5 1.5 3 1.5S6.5 17 8 17s1.5 1.5 3 1.5S12.5 17 14 17s1.5 1.5 3 1.5S18.5 17 20 17" />
+      <path d="M2 21c1.5 0 1.5-1.5 3-1.5" opacity="0" />
+      <circle cx="16" cy="6" r="1.6" />
+      <path d="M5 14V7a2 2 0 0 1 2-2h2M10 14V9M5 9h5" />
+    </>
+  )}
+  {name === 'parking' && (
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="2.5" />
+      <path d="M10 17V8h3a2.5 2.5 0 0 1 0 5h-3" />
+    </>
+  )}
+  {name === 'balcony' && (
+    <>
+      <path d="M3 12h18M3 12v9M21 12v9" />
+      <path d="M7 12v9M11 12v9M15 12v9M19 12v9M3 17h18" />
+      <path d="M8 8a2 2 0 1 1 4 0M16 5c.8.6.8 1.4 0 2" />
+    </>
+  )}
+  {name === 'wifi' && (
+    <>
+      <path d="M2.5 9a15 15 0 0 1 19 0" />
+      <path d="M6 12.5a10 10 0 0 1 12 0" />
+      <path d="M9.5 16a5 5 0 0 1 5 0" />
+      <circle cx="12" cy="19.5" r="1" fill="currentColor" stroke="none" />
+    </>
+  )}
+</svg>
+
+<style>
+  .icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    color: var(--color-dark);
+  }
+</style>

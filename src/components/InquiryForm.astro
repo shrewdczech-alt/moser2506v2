@@ -1,0 +1,148 @@
+---
+import { getAbsoluteLocaleUrl } from 'astro:i18n';
+import { getEntry } from 'astro:content';
+import type { Locale } from '../config/site';
+import { site } from '../config/site';
+import { useTranslations } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const faq = await getEntry('faq', `${locale}/faq`);
+const gdpr = faq?.data.documents.at(-1)?.file ?? '/dokumenty/gdpr.pdf';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const action = `https://formspree.io/f/${site.formspreeId}`;
+// Po odeslání se návštěvník vrátí na náš web, ne na stránku Formspree.
+const thanksUrl = getAbsoluteLocaleUrl(locale, '/dekujeme/');
+const subject =
+  locale === 'cs' ? 'Nová poptávka z webu moser2506.cz' : 'New enquiry from moser2506.cz';
+---
+
+<form class="form" action={action} method="POST">
+  <input type="hidden" name="_subject" value={subject} />
+  <input type="hidden" name="_next" value={thanksUrl} />
+  <input type="hidden" name="_language" value={locale} />
+
+  {/* Past na roboty: člověk toto pole nevidí, robot ho vyplní a Formspree
+      takovou zprávu zahodí. Stávající formulář žádnou ochranu nemá. */}
+  <div class="form__gotcha" aria-hidden="true">
+    <label for="company">Company</label>
+    <input type="text" id="company" name="_gotcha" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <p class="form__field">
+    <label class="form__label" for="name">
+      {t('form.name')} <span class="form__required" title={t('form.required')}>*</span>
+    </label>
+    <input class="form__input" type="text" id="name" name="name" required autocomplete="name" />
+  </p>
+
+  <p class="form__field">
+    <label class="form__label" for="email">
+      {t('form.email')} <span class="form__required" title={t('form.required')}>*</span>
+    </label>
+    <input
+      class="form__input" type="email" id="email" name="_replyto" required
+      autocomplete="email" inputmode="email"
+    />
+  </p>
+
+  <p class="form__field">
+    <label class="form__label" for="message">
+      {t('form.message')} <span class="form__required" title={t('form.required')}>*</span>
+    </label>
+    <textarea class="form__input" id="message" name="message" rows="5" required></textarea>
+  </p>
+
+  <p class="form__consent">
+    <input type="checkbox" id="gdpr-consent" name="gdpr_consent" required />
+    <label for="gdpr-consent">
+      {t('form.consent')} <a href={`${base}${gdpr}`}>PDF</a>
+      <span class="form__required" title={t('form.required')}>*</span>
+    </label>
+  </p>
+
+  <button class="button form__submit" type="submit">{t('form.submit')}</button>
+</form>
+
+<style>
+  .form {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    background: var(--color-white);
+    color: var(--color-text);
+    border-radius: var(--radius-lg);
+  }
+
+  .form__field {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .form__label {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: var(--text-sm);
+  }
+
+  .form__required {
+    color: #b3261e;
+  }
+
+  .form__input {
+    width: 100%;
+    /* 16px, aby iOS při psaní nezvětšoval stránku. */
+    font-size: 1rem;
+    font-family: inherit;
+    min-height: 44px;
+    padding: var(--space-3);
+    color: var(--color-text);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  textarea.form__input {
+    resize: vertical;
+  }
+
+  .form__input:focus-visible {
+    border-color: var(--color-dark);
+  }
+
+  .form__consent {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: 1.5;
+  }
+
+  .form__consent input {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.15rem;
+  }
+
+  .form__submit {
+    justify-self: start;
+  }
+
+  /* Skryté pro člověka, dostupné pro robota - proto ne display:none. */
+  .form__gotcha {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+</style>

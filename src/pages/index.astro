@@ -1,19 +1,29 @@
 ---
 import Layout from '../layouts/Layout.astro';
-
-// Česká verze webu. Obsah sekcí se do ní bude vkládat ve fázi 4;
-// zatím ověřuje, že routing, styly a nasazení fungují.
+import Hero from '../components/Hero.astro';
+import Accommodation from '../components/Accommodation.astro';
+import Amenities from '../components/Amenities.astro';
+import Gallery from '../components/Gallery.astro';
+import Trips from '../components/Trips.astro';
+import News from '../components/News.astro';
+import Faq from '../components/Faq.astro';
+import Booking from '../components/Booking.astro';
+import Contact from '../components/Contact.astro';
 ---
 
 <Layout
   locale="cs"
-  title="Apartmán Moser 2506 — Karlovy Vary"
-  description="Moderní apartmán 2+kk (48 m²) v uzavřeném rezidenčním areálu v Karlových Varech. Wellness, parkování, klidná lokalita."
+  title="Apartmán Moser 2506 — ubytování v Karlových Varech"
+  description="Moderní apartmán 2+kk (48 m²) v uzavřeném areálu Rezidence Moser v Karlových Varech. Bazén, sauna, posilovna, vlastní parkovací místo a balkón."
+  ogImage="/fotky/hero/panorama.jpg"
 >
-  <section class="section" id="about">
-    <div class="container">
-      <h1>Apartmán Moser 2506</h1>
-      <p>Kostra webu. Obsah sekcí se doplní ve fázi 4.</p>
-    </div>
-  </section>
+  <Hero locale="cs" />
+  <Accommodation locale="cs" />
+  <Amenities locale="cs" />
+  <Gallery locale="cs" />
+  <Trips locale="cs" />
+  <News locale="cs" />
+  <Faq locale="cs" />
+  <Booking locale="cs" />
+  <Contact locale="cs" />
 </Layout>

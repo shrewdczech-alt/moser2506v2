@@ -1,0 +1,99 @@
+---
+import { getEntry } from 'astro:content';
+import type { Locale } from '../config/site';
+import { site, currencyByLocale } from '../config/site';
+import InquiryForm from './InquiryForm.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const entry = await getEntry('booking', `${locale}/booking`);
+if (!entry) throw new Error(`Chybí obsahový soubor src/content/${locale}/booking.md`);
+const { heading, subheading, fallback, inquiryHeading, inquiryText } = entry.data;
+
+const currency = currencyByLocale[locale];
+---
+
+<section class="section section--dark" id="bookings">
+  <div class="container">
+    <h2>{heading}</h2>
+    <p class="section__lead">{subheading}</p>
+
+    <div id="previo-booking-engine" class="previo">
+      <noscript>{fallback}</noscript>
+    </div>
+    <p class="previo__fallback" data-previo-fallback hidden>{fallback}</p>
+
+    <div class="inquiry" id="dotaz">
+      <div class="inquiry__intro">
+        <h3>{inquiryHeading}</h3>
+        <p>{inquiryText}</p>
+      </div>
+      <InquiryForm locale={locale} />
+    </div>
+  </div>
+</section>
+
+<script is:inline define:vars={{ previoId: site.previoId, locale, currency }}>
+  // Rezervační systém Previo. Konfigurace se odvozuje z jazyka stránky,
+  // takže se nikde neopakuje ručně přepsaná hodnota.
+  window.bookingEngineConfig = { id: previoId, lang: locale, currency };
+
+  var previoScript = document.createElement('script');
+  previoScript.src = 'https://booking.previo.app/loader/';
+  previoScript.async = true;
+
+  // Když se rezervační systém nenačte, ukáže se místo prázdna kontakt.
+  previoScript.onerror = function () {
+    var fallback = document.querySelector('[data-previo-fallback]');
+    if (fallback) fallback.hidden = false;
+  };
+
+  document.head.appendChild(previoScript);
+</script>
+
+<style>
+  .section--dark {
+    background: var(--color-dark);
+    color: var(--color-text-inverse);
+  }
+
+  .section__lead {
+    font-size: var(--text-lg);
+    color: #c2ccd3;
+    margin-bottom: var(--space-8);
+  }
+
+  .previo {
+    min-height: 6rem;
+    padding: var(--space-4);
+    background: var(--color-white);
+    color: var(--color-text);
+    border-radius: var(--radius-lg);
+  }
+
+  .previo__fallback {
+    margin-top: var(--space-4);
+  }
+
+  .inquiry {
+    display: grid;
+    gap: var(--space-8);
+    margin-top: var(--space-16);
+    scroll-margin-top: var(--header-height);
+  }
+
+  @media (min-width: 52rem) {
+    .inquiry {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+      gap: var(--space-12);
+      align-items: start;
+    }
+  }
+
+  .inquiry__intro p {
+    color: #c2ccd3;
+  }
+</style>

@@ -1,0 +1,137 @@
+---
+import { getEntry, render } from 'astro:content';
+import type { Locale } from '../config/site';
+import Icon from './Icon.astro';
+import Photo from './Photo.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const entry = await getEntry('amenities', `${locale}/amenities`);
+if (!entry) throw new Error(`Chybí obsahový soubor src/content/${locale}/amenities.md`);
+const { Content } = await render(entry);
+const { heading, subheading, cards, tiles } = entry.data;
+---
+
+<section class="section section--alt" id="amenities">
+  <div class="container">
+    <h2>{heading}</h2>
+    <p class="section__lead">{subheading}</p>
+
+    <ul class="cards">
+      {cards.map((card) => (
+        <li class="card">
+          <Icon name={card.icon} />
+          <h3 class="card__title">{card.title}</h3>
+          <p class="card__text">{card.text}</p>
+        </li>
+      ))}
+    </ul>
+
+    <ul class="tiles">
+      {tiles.map((tile) => (
+        <li class="tile">
+          <Photo
+            file={tile.file}
+            alt={tile.alt}
+            widths={[320, 640]}
+            sizes="(max-width: 40rem) 50vw, 15rem"
+            class="tile__photo"
+          />
+          <h3 class="tile__title">{tile.title}</h3>
+        </li>
+      ))}
+    </ul>
+
+    <div class="amenities__notes">
+      <Content />
+    </div>
+  </div>
+</section>
+
+<style>
+  .section__lead {
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-8);
+  }
+
+  .cards,
+  .tiles {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0 0 var(--space-12);
+    padding: 0;
+    list-style: none;
+  }
+
+  .cards {
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-8) var(--space-6);
+    text-align: center;
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    /* Vnitřní rádius je menší než vnější o velikost odsazení. */
+    border-radius: var(--radius-lg);
+  }
+
+  .card__title {
+    margin: 0;
+    font-size: var(--text-lg);
+  }
+
+  .card__text {
+    margin: 0;
+    color: var(--color-text-muted);
+    text-wrap: pretty;
+  }
+
+  .tiles {
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  }
+
+  .tile {
+    overflow: hidden;
+    background: var(--color-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .tile :global(.tile__photo) {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+
+  .tile__title {
+    margin: 0;
+    padding: var(--space-4);
+    font-size: var(--text-base);
+    text-align: center;
+  }
+
+  .amenities__notes {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 40rem) {
+    .amenities__notes {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .amenities__notes :global(ul) {
+    margin: var(--space-2) 0 0;
+    padding-left: var(--space-5);
+  }
+</style>

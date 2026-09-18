@@ -1,0 +1,263 @@
+---
+import { Image } from 'astro:assets';
+import { getEntry } from 'astro:content';
+import type { Locale } from '../config/site';
+import { useTranslations } from '../i18n/ui';
+import { getGalleryPhotos } from '../lib/photos';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const entry = await getEntry('gallery', `${locale}/gallery`);
+if (!entry) throw new Error(`Chybí obsahový soubor src/content/${locale}/gallery.md`);
+const { heading, subheading, fallbackAlt, captions } = entry.data;
+
+// Seznam fotek je samotná složka. Přidat fotku = nahrát soubor,
+// pořadí určuje číslo na začátku názvu.
+const photos = getGalleryPhotos();
+---
+
+<section class="section" id="gallery">
+  <div class="container">
+    <h2>{heading}</h2>
+    <p class="section__lead">{subheading}</p>
+
+    <ul class="grid">
+      {photos.map((photo, index) => {
+        const alt = captions[photo.name] ?? fallbackAlt;
+        return (
+          <li>
+            <button
+              class="thumb"
+              type="button"
+              data-lightbox-open={index}
+              aria-label={alt}
+            >
+              <Image
+                src={photo.image}
+                alt=""
+                widths={[320, 640]}
+                sizes="(max-width: 40rem) 45vw, 15rem"
+                format="webp"
+                loading="lazy"
+                decoding="async"
+                class="thumb__image"
+              />
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+
+  <dialog class="lightbox" data-lightbox aria-label={heading}>
+    <button class="lightbox__close" type="button" data-lightbox-close>
+      <span class="visually-hidden">{t('gallery.close')}</span>
+      <span aria-hidden="true">&times;</span>
+    </button>
+
+    <div class="lightbox__stage">
+      {photos.map((photo, index) => (
+        <figure class="lightbox__item" data-lightbox-item={index} hidden>
+          <Image
+            src={photo.image}
+            alt={captions[photo.name] ?? fallbackAlt}
+            widths={[768, 1280, 1920]}
+            sizes="100vw"
+            format="webp"
+            loading="lazy"
+            decoding="async"
+            class="lightbox__image"
+          />
+          <figcaption class="lightbox__caption">
+            {captions[photo.name] ?? fallbackAlt}
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+
+    <button class="lightbox__nav lightbox__nav--prev" type="button" data-lightbox-prev>
+      <span class="visually-hidden">{t('gallery.previous')}</span>
+      <span aria-hidden="true">&#8249;</span>
+    </button>
+    <button class="lightbox__nav lightbox__nav--next" type="button" data-lightbox-next>
+      <span class="visually-hidden">{t('gallery.next')}</span>
+      <span aria-hidden="true">&#8250;</span>
+    </button>
+  </dialog>
+</section>
+
+<script>
+  // Lightbox nad nativním <dialog>. Escape a zamknutí fokusu uvnitř
+  // zajišťuje prohlížeč sám, nepotřebujeme na to knihovnu.
+  const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+  const items = [...document.querySelectorAll<HTMLElement>('[data-lightbox-item]')];
+  const openers = [...document.querySelectorAll<HTMLButtonElement>('[data-lightbox-open]')];
+
+  if (dialog && items.length) {
+    let current = 0;
+
+    const show = (index: number) => {
+      current = (index + items.length) % items.length;
+      items.forEach((item, i) => {
+        item.hidden = i !== current;
+      });
+    };
+
+    openers.forEach((button) => {
+      button.addEventListener('click', () => {
+        show(Number(button.dataset.lightboxOpen));
+        dialog.showModal();
+      });
+    });
+
+    dialog
+      .querySelector('[data-lightbox-close]')
+      ?.addEventListener('click', () => dialog.close());
+    dialog
+      .querySelector('[data-lightbox-prev]')
+      ?.addEventListener('click', () => show(current - 1));
+    dialog
+      .querySelector('[data-lightbox-next]')
+      ?.addEventListener('click', () => show(current + 1));
+
+    // Kliknutí mimo fotku zavírá, stejně jako to dělá většina galerií.
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (!dialog.open) return;
+      if (event.key === 'ArrowLeft') show(current - 1);
+      if (event.key === 'ArrowRight') show(current + 1);
+    });
+
+    // Po zavření vrátit fokus na dlaždici, ze které se galerie otevřela.
+    dialog.addEventListener('close', () => openers[current]?.focus());
+  }
+</script>
+
+<style>
+  .section__lead {
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-8);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .thumb {
+    display: block;
+    width: 100%;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: zoom-in;
+  }
+
+  .thumb :global(.thumb__image) {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    transition: transform 200ms ease;
+  }
+
+  .thumb:hover :global(.thumb__image) {
+    transform: scale(1.04);
+  }
+
+  .lightbox {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+    background: rgb(17 32 42 / 0.96);
+    border: none;
+  }
+
+  .lightbox::backdrop {
+    background: rgb(17 32 42 / 0.9);
+  }
+
+  .lightbox__stage {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    padding: var(--space-12) var(--space-4);
+  }
+
+  .lightbox__item {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+    max-height: 100%;
+  }
+
+  .lightbox__item[hidden] {
+    display: none;
+  }
+
+  .lightbox__item :global(.lightbox__image) {
+    max-width: 100%;
+    max-height: 75vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    margin-inline: auto;
+    border-radius: var(--radius);
+  }
+
+  .lightbox__caption {
+    color: var(--color-text-inverse);
+    text-align: center;
+    font-size: var(--text-sm);
+  }
+
+  .lightbox__close,
+  .lightbox__nav {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    color: var(--color-text-inverse);
+    background: rgb(255 255 255 / 0.12);
+    border: none;
+    border-radius: 50%;
+    font-size: 1.75rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .lightbox__close:hover,
+  .lightbox__nav:hover {
+    background: rgb(255 255 255 / 0.24);
+  }
+
+  .lightbox__close {
+    top: var(--space-4);
+    right: var(--space-4);
+  }
+
+  .lightbox__nav {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .lightbox__nav--prev { left: var(--space-4); }
+  .lightbox__nav--next { right: var(--space-4); }
+</style>
