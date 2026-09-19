@@ -34,10 +34,10 @@ jobs:
       - run: npm run check
 
       # DEPLOY_TARGET řídí, zda se web staví pro náhled na github.io
-      # nebo pro ostrou doménu. Při přepnutí ve fázi 7 se změní jen tahle hodnota.
+      # nebo pro ostrou doménu.
       - run: npm run build
         env:
-          DEPLOY_TARGET: preview
+          DEPLOY_TARGET: production
 
       - uses: actions/upload-pages-artifact@v4
         with:
