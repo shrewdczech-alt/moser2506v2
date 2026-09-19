@@ -3,10 +3,10 @@ heading: Ubytování
 subheading: Ubytování v Moser Apartment 2506
 tagline: Místo pro odpočinek, sport i zábavu.
 photos:
-  - file: sekce/obyvaci-pokoj.jpg
-    alt: Obývací pokoj s rozkládací pohovkou, televizí a vstupem na balkón
+  - file: sekce/20260630_213337.jpg
+    alt: Obývací pokoj s jídelním stolem a pohovkou
   - file: sekce/loznice.jpg
-    alt: Ložnice s manželskou postelí a vestavěnou skříní
+    alt: Povlečená postel s ručníky složenými do tvaru labutě
   - file: sekce/bazen.jpg
     alt: Vnitřní bazén v Rezidenci Moser
   - file: sekce/rezidence.jpg

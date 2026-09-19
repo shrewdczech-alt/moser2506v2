@@ -3,10 +3,10 @@ heading: Accommodation
 subheading: Stay at Moser Apartment 2506
 tagline: Your destination for relaxation, sports and fun.
 photos:
-  - file: sekce/obyvaci-pokoj.jpg
-    alt: Living room with a sofa bed, television and balcony access
+  - file: sekce/20260630_213337.jpg
+    alt: Living room with a dining table and sofa
   - file: sekce/loznice.jpg
-    alt: Bedroom with a double bed and built-in wardrobe
+    alt: Made bed with towels folded into a swan shape
   - file: sekce/bazen.jpg
     alt: Indoor swimming pool at Moser Residence
   - file: sekce/rezidence.jpg
