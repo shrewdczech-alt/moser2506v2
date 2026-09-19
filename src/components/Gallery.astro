@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import { getEntry } from 'astro:content';
 import type { Locale } from '../config/site';
 import { useTranslations } from '../i18n/ui';
-import { getGalleryPhotos } from '../lib/photos';
+import { getGalleryPhotos, getPanoramaPhotos } from '../lib/photos';
 
 interface Props {
   locale: Locale;
@@ -17,7 +17,10 @@ const { heading, subheading, fallbackAlt, captions } = entry.data;
 
 // Seznam fotek je samotná složka. Přidat fotku = nahrát soubor,
 // pořadí určuje číslo na začátku názvu.
+const panoramas = getPanoramaPhotos();
 const photos = getGalleryPhotos();
+// Panoramata i mřížka sdílejí jeden lightbox, panoramata jsou první.
+const allPhotos = [...panoramas, ...photos];
 ---
 
 <section class="section" id="gallery">
@@ -25,9 +28,35 @@ const photos = getGalleryPhotos();
     <h2>{heading}</h2>
     <p class="section__lead">{subheading}</p>
 
-    <ul class="grid">
-      {photos.map((photo, index) => {
+    <div class="panoramas">
+      {panoramas.map((photo, index) => {
         const alt = captions[photo.name] ?? fallbackAlt;
+        return (
+          <button
+            class="panorama"
+            type="button"
+            data-lightbox-open={index}
+            aria-label={alt}
+          >
+            <Image
+              src={photo.image}
+              alt=""
+              widths={[640, 1024, 1536]}
+              sizes="100vw"
+              format="webp"
+              loading="lazy"
+              decoding="async"
+              class="panorama__image"
+            />
+          </button>
+        );
+      })}
+    </div>
+
+    <ul class="grid">
+      {photos.map((photo, gridIndex) => {
+        const alt = captions[photo.name] ?? fallbackAlt;
+        const index = panoramas.length + gridIndex;
         return (
           <li>
             <button
@@ -60,7 +89,7 @@ const photos = getGalleryPhotos();
     </button>
 
     <div class="lightbox__stage">
-      {photos.map((photo, index) => (
+      {allPhotos.map((photo, index) => (
         <figure class="lightbox__item" data-lightbox-item={index} hidden>
           <Image
             src={photo.image}
@@ -145,6 +174,34 @@ const photos = getGalleryPhotos();
     font-size: var(--text-lg);
     color: var(--color-text-muted);
     margin-bottom: var(--space-8);
+  }
+
+  .panoramas {
+    display: grid;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+
+  .panorama {
+    display: block;
+    width: 100%;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: zoom-in;
+  }
+
+  .panorama :global(.panorama__image) {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: transform 200ms ease;
+  }
+
+  .panorama:hover :global(.panorama__image) {
+    transform: scale(1.02);
   }
 
   .grid {

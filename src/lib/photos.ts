@@ -32,17 +32,32 @@ export interface GalleryPhoto {
   image: ImageMetadata;
 }
 
+const PANORAMA_ORDER = ['panorama-rezidence.jpg', 'panorama-interier.jpg'];
+
 /**
- * Vrátí všechny fotky z src/fotky/galerie/ seřazené podle názvu souboru.
+ * Vrátí všechny fotky z src/fotky/galerie/ seřazené podle názvu souboru,
+ * kromě panoramat (ta se zobrazují samostatně přes getPanoramaPhotos).
  * Pořadí v galerii tedy určuje číslo na začátku názvu - přidat fotku
  * znamená nahrát soubor do složky, nic víc.
  */
 export function getGalleryPhotos(): GalleryPhoto[] {
   return Object.entries(all)
     .filter(([path]) => path.startsWith(GALLERY_PREFIX))
-    .sort(([a], [b]) => a.localeCompare(b, 'cs'))
     .map(([path, mod]) => ({
       name: path.slice(GALLERY_PREFIX.length),
       image: mod.default,
-    }));
+    }))
+    .filter((photo) => !PANORAMA_ORDER.includes(photo.name))
+    .sort((a, b) => a.name.localeCompare(b.name, 'cs'));
+}
+
+/**
+ * Vrátí panoramatické fotky v pevně daném pořadí - zobrazují se
+ * samostatně na šířku stránky na úvodu galerie, mimo mřížku.
+ */
+export function getPanoramaPhotos(): GalleryPhoto[] {
+  return PANORAMA_ORDER.map((name) => ({
+    name,
+    image: all[`${GALLERY_PREFIX}${name}`].default,
+  }));
 }

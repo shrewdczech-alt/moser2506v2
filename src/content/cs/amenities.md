@@ -24,9 +24,6 @@ tiles:
   - file: vybaveni/uklid.jpg
     alt: Složené čisté ručníky a povlečení
     title: Úklid v ceně
-  - file: vybaveni/snidane.jpg
-    alt: Prostřená snídaně na stole
-    title: Snídaně (neposkytuje hostitel)
   - file: vybaveni/bazen.jpg
     alt: Hladina vnitřního bazénu
     title: Bazén

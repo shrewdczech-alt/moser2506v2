@@ -24,9 +24,6 @@ tiles:
   - file: vybaveni/uklid.jpg
     alt: Folded clean towels and bed linen
     title: Cleaning included
-  - file: vybaveni/snidane.jpg
-    alt: Breakfast laid out on a table
-    title: Breakfast (not provided by the host)
   - file: vybaveni/bazen.jpg
     alt: Surface of the indoor swimming pool
     title: Swimming pool
