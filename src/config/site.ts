@@ -20,8 +20,8 @@ export const site = {
   /** Rezervační systém Previo - ID ubytovacího zařízení. */
   previoId: '019f192c-8a59-7078-b541-bfc850fad53c',
 
-  /** Formspree - ID formuláře, na který chodí poptávky. */
-  formspreeId: 'xpqgqkak',
+  /** Web3Forms - přístupový klíč formuláře, na který chodí poptávky. */
+  web3formsAccessKey: '5e62268b-588d-4ff9-a504-cc533739ade0',
 } as const;
 
 /** Podporované jazyky. Musí odpovídat i18n.locales v astro.config.mjs. */

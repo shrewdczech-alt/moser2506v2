@@ -137,7 +137,7 @@ novinek působí hůř, než kdyby tam nebyla.
 ## Chci změnit telefon, e-mail nebo adresu
 
 Všechno je v jednom souboru: `src/config/site.ts`. Je tam i identifikátor
-rezervačního systému Previo a formuláře Formspree.
+rezervačního systému Previo a přístupový klíč formuláře Web3Forms.
 
 ---
 

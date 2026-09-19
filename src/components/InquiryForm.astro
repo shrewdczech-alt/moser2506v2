@@ -16,23 +16,23 @@ const faq = await getEntry('faq', `${locale}/faq`);
 const gdpr = faq?.data.documents.at(-1)?.file ?? '/dokumenty/gdpr.pdf';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
-const action = `https://formspree.io/f/${site.formspreeId}`;
-// Po odeslání se návštěvník vrátí na náš web, ne na stránku Formspree.
+const action = 'https://api.web3forms.com/submit';
+// Po odeslání se návštěvník vrátí na náš web, ne na stránku Web3Forms.
 const thanksUrl = getAbsoluteLocaleUrl(locale, '/dekujeme/');
 const subject =
   locale === 'cs' ? 'Nová poptávka z webu moser2506.cz' : 'New enquiry from moser2506.cz';
 ---
 
 <form class="form" action={action} method="POST">
-  <input type="hidden" name="_subject" value={subject} />
-  <input type="hidden" name="_next" value={thanksUrl} />
-  <input type="hidden" name="_language" value={locale} />
+  <input type="hidden" name="access_key" value={site.web3formsAccessKey} />
+  <input type="hidden" name="subject" value={subject} />
+  <input type="hidden" name="redirect" value={thanksUrl} />
+  <input type="hidden" name="language" value={locale} />
 
-  {/* Past na roboty: člověk toto pole nevidí, robot ho vyplní a Formspree
-      takovou zprávu zahodí. Stávající formulář žádnou ochranu nemá. */}
+  {/* Past na roboty: člověk toto pole nevidí, robot ho vyplní a Web3Forms
+      takovou zprávu zahodí. */}
   <div class="form__gotcha" aria-hidden="true">
-    <label for="company">Company</label>
-    <input type="text" id="company" name="_gotcha" tabindex="-1" autocomplete="off" />
+    <input type="checkbox" id="botcheck" name="botcheck" tabindex="-1" autocomplete="off" />
   </div>
 
   <p class="form__field">
@@ -47,7 +47,7 @@ const subject =
       {t('form.email')} <span class="form__required" title={t('form.required')}>*</span>
     </label>
     <input
-      class="form__input" type="email" id="email" name="_replyto" required
+      class="form__input" type="email" id="email" name="email" required
       autocomplete="email" inputmode="email"
     />
   </p>

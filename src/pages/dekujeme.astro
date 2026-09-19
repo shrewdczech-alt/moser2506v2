@@ -4,8 +4,7 @@ import { getEntry } from 'astro:content';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import { useTranslations } from '../i18n/ui';
 
-// Stránka, na kterou Formspree vrátí návštěvníka po odeslání poptávky.
-// Dnes skončí na cizí stránce formspree.io a z webu odejde.
+// Stránka, na kterou Web3Forms vrátí návštěvníka po odeslání poptávky.
 const t = useTranslations('cs');
 const booking = await getEntry('booking', 'cs/booking');
 const { thanksHeading, thanksText } = booking!.data;
