@@ -18,7 +18,7 @@ export const site = {
   facebookUrl: 'https://www.facebook.com/profile.php?id=61591391640658',
 
   /** Rezervační systém Previo - ID ubytovacího zařízení. */
-  previoId: '019f192c-8a59-7078-b541-bfc850fad53c',
+  previoId: '01a12018-eb14-704a-97f1-deed11f1d2a3',
 
   /** Web3Forms - přístupový klíč formuláře, na který chodí poptávky. */
   web3formsAccessKey: '5e62268b-588d-4ff9-a504-cc533739ade0',

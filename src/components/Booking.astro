@@ -21,7 +21,7 @@ const currency = currencyByLocale[locale];
     <h2>{heading}</h2>
     <p class="section__lead">{subheading}</p>
 
-    <div id="previo-booking-engine" class="previo">
+    <div id={`previo-booking-engine-${site.previoId}`} class="previo">
       <noscript>{fallback}</noscript>
     </div>
     <p class="previo__fallback" data-previo-fallback hidden>{fallback}</p>
@@ -39,7 +39,13 @@ const currency = currencyByLocale[locale];
 <script is:inline define:vars={{ previoId: site.previoId, locale, currency }}>
   // Rezervační systém Previo. Konfigurace se odvozuje z jazyka stránky,
   // takže se nikde neopakuje ručně přepsaná hodnota.
-  window.bookingEngineConfig = { id: previoId, lang: locale, currency };
+  window.bookingEngineConfig = window.bookingEngineConfig || [];
+  window.bookingEngineConfig.push({
+    id: previoId,
+    customSelector: 'previo-booking-engine-' + previoId,
+    lang: locale,
+    currency: currency,
+  });
 
   var previoScript = document.createElement('script');
   previoScript.src = 'https://booking.previo.app/loader/';
